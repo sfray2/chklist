@@ -1,0 +1,6 @@
+{
+	"appId": "com.shaenafray.checklist",
+	"appName": "chklist",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}
