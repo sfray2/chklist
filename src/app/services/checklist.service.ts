@@ -13,7 +13,7 @@ import * as CordovaSQLiteDriver from 'localforage-cordovasqlitedriver';
 export class ChecklistService {
   private checklists$: BehaviorSubject<Checklist[]> = new BehaviorSubject<Checklist[]>([]);
   private checklists: Checklist[] = [];
-  //private loaded = false;
+  private loaded = false;
 
   constructor(private storage: Storage) {
     this.storage.defineDriver(CordovaSQLiteDriver);
@@ -21,8 +21,16 @@ export class ChecklistService {
   }
 
   async load(): Promise<void> {
-    return Promise.resolve();
-  }
+    if (!this.loaded) {
+    const checklists = await this.storage.get('checklists');
+    if (checklists !== null) {
+    this.checklists = checklists;
+    this.checklists$.next(this.checklists);
+    }
+    this.loaded = true;
+    }
+   }
+
 
   getChecklists(): Observable<Checklist[]> {
     return this.checklists$;
@@ -122,8 +130,8 @@ export class ChecklistService {
 
   save(): Promise<void> {
     this.checklists$.next(this.checklists);
-    return Promise.resolve();
-  }
+    return this.storage.set('checklists', this.checklists);
+   }
 
   generateSlug(title: string): string {
     // NOTE: This is a simplistic slug generator and will not handle things like special characters.
